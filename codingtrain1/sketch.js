@@ -1,35 +1,37 @@
 let mobilenet;
-
-let puffin;
+let video;
+let label = "";
 
 const modelReady = () => {
     console.log("Model is ready ! ! ! ");
-    mobilenet.predict(puffin, gotResults);
+    mobilenet.predict(gotResults);
 };
 
 const gotResults = (error, results) => {
     if (error) {
         console.error(error);
     } else {
-        console.log(results);
-        let label = results[0].label;
-        let prob = results[0].confidence * 100;
-        fill(0);
-        textSize(64);
-
-        createP(`best predicted for ${label} with `);
-        createP(`Probability of ${prob}%`);
+        label = results[0].label;
+        mobilenet.predict(gotResults);
     }
 };
 
-const imageReady = () => {
-    image(puffin, 0, 0, width, height);
-};
+// const imageReady = () => {
+//     image(puffin, 0, 0, width, height);
+// };
 
 function setup() {
-    createCanvas(640, 480);
-    puffin = createImg("/images/puffin.jpg", imageReady);
-    puffin.hide();
+    createCanvas(640, 550);
+    video = createCapture(VIDEO);
+    video.hide();
     background(0);
-    mobilenet = ml5.imageClassifier("MobileNet", modelReady);
+    mobilenet = ml5.imageClassifier("MobileNet", video, modelReady);
+}
+
+function draw() {
+    background(0);
+    image(video, 0, 0);
+    fill(255);
+    textSize(80);
+    text(label, 5, height - 20);
 }
